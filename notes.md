@@ -474,7 +474,10 @@ OLDPWD=/
 ```
 
 * 
-explain this shell file? "#!/bin/bash
+explain this shell file? 
+
+```
+"#!/bin/bash
 
 set -e
 
@@ -513,7 +516,7 @@ fi
 
 
 $(command -v airflow) db upgrade
-
+```
 
 
 exec airflow webserver" because I'm really trying to learn how to write a docker compose file with airflow biwthout depending on the prewritten docker-compose by airflow, I want to know how the docker compose that uses airflow works also
@@ -539,27 +542,29 @@ set -e
 set -e: This is a crucial command for robust shell scripting. It means "exit immediately if a command exits with a non-zero status." In simple terms, if any command in the script fails, the script will stop right there instead of continuing and potentially causing more problems. This is important for ensuring a clean setup.
 
 Bash
-
+```
 if [ -e "/opt/airflow/requirements.txt" ]; then
   $(command python) pip install --upgrade pip
   $(command -v pip) install --user -r requirements.txt
 fi
-if [ -e "/opt/airflow/requirements.txt" ]; then ... fi: This block checks if a file named requirements.txt exists at the /opt/airflow/ path inside the container.
+if [ -e "/opt/airflow/requirements.txt" ]; then ... fi
+```
+This block checks if a file named requirements.txt exists at the /opt/airflow/ path inside the container.
 
 /opt/airflow/requirements.txt: This file is where you would list any Python libraries (e.g., apache-airflow-providers-mysql, pandas, scikit-learn) that your Airflow DAGs or custom operators need, beyond the core Airflow installation.
 
-$(command python) pip install --upgrade pip: This upgrades the pip installer tool itself to its latest version. $(command python) ensures it uses the python executable found in the system's PATH.
+`$(command python) pip install --upgrade pip`: This upgrades the pip installer tool itself to its latest version. $(command python) ensures it uses the python executable found in the system's PATH.
 
-$(command -v pip) install --user -r requirements.txt: This command installs all the Python packages listed in requirements.txt.
+`$(command -v pip) install --user -r requirements.txt`: This command installs all the Python packages listed in requirements.txt.
 
-$(command -v pip): Ensures it uses the pip executable found in the system's PATH.
+`$(command -v pip)`: Ensures it uses the pip executable found in the system's PATH.
 
---user: Installs packages into the user's home directory within the container, which is a common practice in Docker to avoid needing root privileges for package installation after the image is built.
+`--user`: Installs packages into the user's home directory within the container, which is a common practice in Docker to avoid needing root privileges for package installation after the image is built.
 
 Purpose: This entire block ensures that any additional Python dependencies required for your Airflow environment (especially for your DAGs) are installed when the container starts up. This is dynamic, allowing you to change requirements.txt without rebuilding the entire Docker image, or to support multiple versions of DAG dependencies.
 
 Bash
-
+```
 if [ ! -f "/opt/airflow/airflow.db" ]; then
   airflow db init && \
   airflow users create \
@@ -570,37 +575,38 @@ if [ ! -f "/opt/airflow/airflow.db" ]; then
     --email admin@example.com \
     --password admin
 fi
-if [ ! -f "/opt/airflow/airflow.db" ]; then ... fi: This block checks if the Airflow metadata database file (airflow.db) does not exist at the /opt/airflow/ path.
+```
+`if [ ! -f "/opt/airflow/airflow.db" ]; then ... fi`: This block checks if the Airflow metadata database file (airflow.db) does not exist at the /opt/airflow/ path.
 
-/opt/airflow/airflow.db: This is the default location for Airflow's SQLite database. SQLite is often used for development or small-scale testing because it's a file-based database and easy to set up.
+`/opt/airflow/airflow.db`: This is the default location for Airflow's SQLite database. SQLite is often used for development or small-scale testing because it's a file-based database and easy to set up.
 
-! -f: This is a shell operator meaning "if not a regular file."
+`! -f`: This is a shell operator meaning "if not a regular file."
 
-airflow db init: This Airflow command initializes the metadata database. It creates all the necessary tables (for DAGs, tasks, connections, variables, etc.) that Airflow needs to operate.
+`airflow db init`: This Airflow command initializes the metadata database. It creates all the necessary tables (for DAGs, tasks, connections, variables, etc.) that Airflow needs to operate.
 
-&& \: The && operator means "execute the next command ONLY if the previous command was successful." The \ is just for line continuation in the script.
+`&& \`: The && operator means "execute the next command ONLY if the previous command was successful." The \ is just for line continuation in the script.
 
-airflow users create ...: This Airflow command creates an initial admin user for the Airflow UI (webserver). It sets the username, name, role, email, and password. This is essential for you to log into the Airflow Webserver for the first time.
+`airflow users create ...`: This Airflow command creates an initial admin user for the Airflow UI (webserver). It sets the username, name, role, email, and password. This is essential for you to log into the Airflow Webserver for the first time.
 
 Purpose: This block ensures that if you're running Airflow for the very first time (or in a fresh container without a pre-existing database volume), it automatically sets up the database and creates an admin user. This prevents you from having to manually run these commands.
 
 Bash
 
-$(command -v airflow) db upgrade
-$(command -v airflow) db upgrade: This Airflow command upgrades the schema of the metadata database.
+`$(command -v airflow) db upgrade`
+`$(command -v airflow) db upgrade`: This Airflow command upgrades the schema of the metadata database.
 
-$(command -v airflow): Ensures it uses the airflow executable found in the system's PATH.
+`$(command -v airflow)`: Ensures it uses the airflow executable found in the system's PATH.
 
 Purpose: Airflow's database schema can change between versions. db upgrade ensures that your database tables are updated to match the version of Airflow you are running. This is important for migrations and compatibility, especially when you upgrade Airflow.
 
 Bash
 
-exec airflow webserver
-exec airflow webserver: This is the final and crucial command.
+`exec airflow webserver`
+`exec airflow webserver`: This is the final and crucial command.
 
-exec: This shell command replaces the current shell process with the specified command (airflow webserver) without creating a new process. This is a Docker best practice because it ensures that signals (like SIGTERM when you run docker stop) are directly passed to the airflow webserver process, allowing it to shut down gracefully.
+`exec`: This shell command replaces the current shell process with the specified command (airflow webserver) without creating a new process. This is a Docker best practice because it ensures that signals (like SIGTERM when you run docker stop) are directly passed to the airflow webserver process, allowing it to shut down gracefully.
 
-airflow webserver: This Airflow command starts the Airflow Webserver, which is the graphical user interface (GUI) you interact with in your browser to monitor DAGs, view logs, configure connections, etc.
+`airflow webserver`: This Airflow command starts the Airflow Webserver, which is the graphical user interface (GUI) you interact with in your browser to monitor DAGs, view logs, configure connections, etc.
 
 Purpose: This is the primary service that this particular Docker container is designed to run.
 
@@ -955,7 +961,7 @@ This docker-compose.yml provides a self-contained, multi-service Airflow environ
 
 via dockerfile
 ```
-$ docker run -d \
+docker run -d \
 	--name some-postgres \
 	-e POSTGRES_PASSWORD=mysecretpassword \
 	-e PGDATA=/var/lib/postgresql/data/pgdata \
@@ -964,6 +970,7 @@ $ docker run -d \
 ```
 
 or via `docker-compose.yaml`
+
 ```
 services:
   some-postgres:
@@ -983,7 +990,6 @@ services:
     volumes:
       - /custom/mount:/var/lib/postgresql/data
 ```
-
 * 
 
 
@@ -997,3 +1003,4 @@ services:
 * apache kafka by techworldwithnana: https://www.youtube.com/watch?v=Ch5VhJzaoaI&list=PLCBT00GZN_SAzwTS-SuLRM547_4MUHPuM&index=2&pp=gAQBiAQB0gcJCcEJAYcqIYzv
 * apache kafka in 6 minutes: https://www.youtube.com/watch?v=Ch5VhJzaoaI&list=PLCBT00GZN_SAzwTS-SuLRM547_4MUHPuM&index=2&pp=gAQBiAQB0gcJCcEJAYcqIYzv
 * configuring confluent kafka with docker: https://docs.confluent.io/platform/current/installation/docker/config-reference.html
+* unifying kafka article: https://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying
