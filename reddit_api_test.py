@@ -57,7 +57,8 @@ if __name__ == "__main__":
         print(f"url: {submission.url}")
         # this is a list of comments
         for i, comment in enumerate(submission.comments):
-            print(f"comment {i}: {comment.__dict__}")
+            if hasattr(comment, "body"): 
+                print(f"comment {i}: {comment.body}")
 
 
     # flush() is a blocking operation. It will pause the 
