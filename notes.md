@@ -1385,6 +1385,86 @@ a comment object in a reddit post has the following data:
 }
 ```
 
+a reply object has the following data:
+```
+{
+  '_replies': <praw.models.comment_forest.CommentForest object at 0x000001AD6D6D5BD0>, 
+  '_submission': Submission(id='1nxh184'), 
+  '_reddit': <praw.reddit.Reddit object at 0x000001AD6CF27850>, 
+  'subreddit_id': 't5_2qjov', 
+  'approved_at_utc': None, 
+  'author_is_blocked': False, 
+  'comment_type': None, 
+  'awarders': [], 
+  'mod_reason_by': None, 
+  'banned_by': None, 
+  'author_flair_type': 'text', 
+  'total_awards_received': 0, 
+  'subreddit': Subreddit(display_name='Philippines'), 
+  'author_flair_template_id': None, 
+  'likes': None, 
+  'user_reports': [], 
+  'saved': False, 
+  'id': 'nho3qjz', 
+  'banned_at_utc': None, 
+  'mod_reason_title': None, 
+  'gilded': 0, 
+  'archived': False, 
+  'collapsed_reason_code': None, 
+  'no_follow': False, 
+  'author': Redditor(name='staleferrari'), 
+  'can_mod_post': False, 
+  'created_utc': 1759553476.0, 
+  'send_replies': True, 
+  'parent_id': 't1_nhnfvu8', 
+  'score': 1, 
+  'author_fullname': 't2_49e5v4z4', 
+  'removal_reason': None, 
+  'approved_by': None, 
+  'mod_note': None, 
+  'all_awardings': [], 
+  'body': 'Gabilat', 
+  'edited': False, 
+  'top_awarded_type': None, 
+  'author_flair_css_class': None, 
+  'name': 't1_nho3qjz', 
+  'is_submitter': False, 
+  'downs': 0, 
+  'author_flair_richtext': [], 
+  'author_patreon_flair': False, 
+  'body_html': '<div class="md"><p>Gabilat</p>\n</div>', 
+  'gildings': {}, 
+  'collapsed_reason': None, 
+  'distinguished': None, 
+  'associated_award': None, 
+  'stickied': False, 
+  'author_premium': False, 
+  'can_gild': False, 
+  'link_id': 't3_1nxh184', 
+  'unrepliable_reason': None, 
+  'author_flair_text_color': None, 
+  'score_hidden': True, 
+  'permalink': '/r/Philippines/comments/1nxh184/this_flood_level_indicator/nho3qjz/', 
+  'subreddit_type': 'public', 
+  'locked': False, 
+  'report_reasons': None, 
+  'created': 1759553476.0, 
+  'author_flair_text': None, 
+  'treatment_tags': [], 
+  'collapsed': False, 
+  'subreddit_name_prefixed': 'r/Philippines', 
+  'controversiality': 0, 
+  'depth': 1, 
+  'author_flair_background_color': None, 
+  'collapsed_because_crowd_control': None, 
+  'mod_reports': [], 
+  'num_reports': None, 
+  'ups': 1, 
+  '_fetched': True
+}
+```
+
+
 # Articles, Videos, Papers:
 * using reddit api using python wrapper praw: https://praw.readthedocs.io/en/stable/getting_started/quick_start.html
 * creating a client secret and id for reddit api: https://github.com/reddit-archive/reddit/wiki/OAuth2
@@ -1396,3 +1476,5 @@ a comment object in a reddit post has the following data:
 * apache kafka in 6 minutes: https://www.youtube.com/watch?v=Ch5VhJzaoaI&list=PLCBT00GZN_SAzwTS-SuLRM547_4MUHPuM&index=2&pp=gAQBiAQB0gcJCcEJAYcqIYzv
 * configuring confluent kafka with docker: https://docs.confluent.io/platform/current/installation/docker/config-reference.html
 * unifying kafka article: https://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying
+* parsing reddit post comments: https://medium.com/@arthurccavalcanti/parsing-reddit-comments-with-praw-f5d6aa221db3
+* fetching data from api using python and dumping to kakfa: https://medium.com/@abdulmoizofficial0/fetch-data-from-api-in-real-time-using-apache-kafka-0b780c943b9a

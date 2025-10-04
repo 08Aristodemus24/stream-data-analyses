@@ -11,6 +11,48 @@ from dotenv import load_dotenv
 
 from kafka import KafkaProducer
 
+def get_all_comments(comment_list):
+    comments_data = []
+    for comment in comment_list:
+        if isinstance(comment, MoreComments):
+            # Replace MoreComments with actual comments
+            # limit=0 expands all MoreComments instances, threshold=0 ensures all are replaced
+            comment.replace_more(limit=None, threshold=0) 
+            # Recursively call the function for the newly fetched comments
+            comments_data.extend(get_all_comments(comment.children))
+        else:
+            comments_data.append({
+                "id": comment.id,
+                "author": comment.author.name if comment.author else "[deleted]",
+                "body": comment.body,
+                "parent_id": comment.parent_id,
+                "replies": get_all_comments(comment.replies) if comment.replies else []
+            })
+    return comments_data
+
+def get_all_replies(replies):
+    reply_data = []
+    for reply in replies:
+        if isinstance(reply, CommentForest):
+            # Recursively call the function for the newly fetched reply
+            reply_data.extend(get_all_replies(reply.children))
+        else:
+            # print(f"reply id: {reply.id}")
+            # print(f"reply author: {reply.author.name if reply.author else '[deleted]'}")
+            # print(f"reply body: {reply.body}")
+            # print(f"reply parent id: {reply.parent_id}")
+            # print(f"reply replies: {get_all_replies(reply.replies) if reply.replies else []}")
+            reply_data.append({
+                "id": reply.id,
+                "author": reply.author.name if reply.author else "[deleted]",
+                "body": reply.body,
+                "parent_id": reply.parent_id,
+                "replies": get_all_replies(reply.replies) if reply.replies else []
+            })
+
+    return reply_data
+
+
 if __name__ == "__main__":
     # load env variables
     env_dir = Path('./').resolve()
@@ -49,16 +91,22 @@ if __name__ == "__main__":
 
     subreddit = reddit.subreddit("Philippines")
     
-    for submission in subreddit.hot(limit=2):
+    for submission in subreddit.hot(limit=10):
         # print(submission.__dict__)
         print(f"title: {submission.title}")
         print(f"score: {submission.score}")
         print(f"id: {submission.id}")
         print(f"url: {submission.url}")
+
         # this is a list of comments
         for i, comment in enumerate(submission.comments):
-            if hasattr(comment, "body"): 
-                print(f"comment {i}: {comment.body}")
+            if hasattr(comment, "body"):
+                print(f"comment {i}: {comment.body}\n")
+                # for i, reply in enumerate(comment.replies):
+                #     print(f"reply {i}: {reply.body}")
+                #     # print(f"reply {i}: {reply.replies}\n")
+                #     print(reply.__dict__)
+                get_all_replies(comment.replies)
 
 
     # flush() is a blocking operation. It will pause the 
