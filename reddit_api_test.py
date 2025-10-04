@@ -3,11 +3,13 @@ import requests
 import os
 import praw 
 
+from praw.models.comment_forest import CommentForest, MoreComments
+
 from uuid import uuid4
 from pathlib import Path
 from dotenv import load_dotenv
 
-
+from kafka import KafkaProducer
 
 if __name__ == "__main__":
     # load env variables
@@ -45,10 +47,21 @@ if __name__ == "__main__":
         user_agent=user_agent,
     )
 
-    subreddit = reddit.subreddit("Jung")
+    subreddit = reddit.subreddit("Philippines")
     
-    for submission in subreddit.hot(limit=10):
+    for submission in subreddit.hot(limit=2):
+        # print(submission.__dict__)
         print(f"title: {submission.title}")
         print(f"score: {submission.score}")
         print(f"id: {submission.id}")
         print(f"url: {submission.url}")
+        # this is a list of comments
+        for i, comment in enumerate(submission.comments):
+            print(f"comment {i}: {comment.__dict__}")
+
+
+    # flush() is a blocking operation. It will pause the 
+    # execution of the calling thread until all previously 
+    # sent records have completed their journey, meaning 
+    # they have been successfully acknowledged by the Kafka
+    # brokers

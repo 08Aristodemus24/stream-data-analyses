@@ -990,8 +990,400 @@ services:
     volumes:
       - /custom/mount:/var/lib/postgresql/data
 ```
-* 
 
+* when the containers namely the kafka zookeeper, schema registry, broker, and control center are finally spun up/started we can visit the control center UI itself representing the kafka brokers topics, producers, and consumers at `http://localhost:9021`
+
+the control center container is just a UI of the kafka brokers itself. Basically confluents apache kafka under the hood already installs and runs the necessary commands like downloading apache kafka itself (`tar -xzf kafka_2.13-4.1.0.tgz`), creates the kafka cluster and the brokers in these clusters, only now we have a UI hosted by the control center container provided by confluent
+
+the way we can create a topic manually assuming apache kafka or the apache kafka that goes with the confluentinc/cp-server image is installed is through the command `bin/kafka-topics.sh --create --topic quickstart-events --bootstrap-server localhost:9092` and we can manually check this if we are indeed in using docker containers by entering the broker container using the confluentinc/cp-server image which essentially the kafka broker itself but can only be operated through command line. So we use this command and we will see that it will be reflected in the UI of the kafka broker which is the control center which allows us to see in a visual representation all the goes on in the kafka broker.
+
+run `bin/kafka-topics.sh --create --topic subreddit-topics --bootstrap-server localhost:9092` or `bin/kafka-topics --create --topic subreddit-topics --bootstrap-server localhost:9092` 
+
+and the way we finally push data into the kafka broker is through kafka's **producer** through the command `bin/kafka-console-producer.sh --topic quickstart-events --bootstrap-server localhost:9092` (but again we can alternatively do this via the control center UI) 
+
+isipin mo parang malaking data storage yung kafka cluster and its brokers by way of its distributed storage where it is specifically for data that comes in at lightning speed and on a daily basis that unfortunately can't be processed by a simple ETL/ELT pipeline alone, since if this was the case sa una pa lang during extraction and transformation it may be probable na habang nagtrtransform pa lang ng data ay meron na dumadating na bagong data in the pipeline which essentially creates a bottle neck and essentially clogs the pipeline because there is still data being processed and transformed at hand, this is why kafka solves this problem by essentially decoupling this ingestion process by a pipeline and the data coming in on a daily basis at perhaps unmanagable speeds.
+
+and when we want the pipeline to finally ingest data we can just use kafka's consumer which essentially returns us the data momentarily stored in the kafka clusters and brokers through the command `bin/kafka-console-consumer.sh --topic quickstart-events --bootstrap-server localhost:9092` (but again we can alternatively do this via the control center UI)
+
+when we enter messages or events in the kafka producer via CLI provided that the kafka consumer is running in unison with this producer we will see that as each event is entered the consumer can basically return this value to us, and when we operate this process via a script like a python script we can essentially see the contents or data itself returnned by the kafka consumer and have our ETL/ELT pipeline ingest this data for analyses or machine learning and other big data processes
+
+* the contents of the Submission object in the list of Submission objects returned by `subreddit.hot()` method are the ff:
+```
+{
+  'comment_limit': 2048, 
+  'comment_sort': 'confidence', 
+  '_reddit': <praw.reddit.Reddit object at 0x000002E6D377A090>, 
+  'approved_at_utc': None, 
+  'subreddit': Subreddit(display_name='Philippines'), 
+  'selftext': '\nWelcome to the r/Philippines hub thread! Where are you trying to go?\n\n## [Daily random discussion - Oct 04, 2025]
+  (https://www.reddit.com/r/Philippines/comments/1nxcdz6)\n## [Weekly help thread - Sep 29, 2025]
+  (https://www.reddit.com/r/Philippines/comments/1nt0uu1)\n## [What to do in June 2025]
+  (https://www.reddit.com/r/Philippines/comments/1kbyd75)', 
+  'author_fullname': 't2_g8u9x', 
+  'saved': False, 
+  'mod_reason_title': None, 
+  'gilded': 0, 
+  'clicked': False, 
+  'title': '[HUB] Weekly Help Thread, Random Discussion, Events This Month, +more', 
+  'link_flair_richtext': [], 
+  'subreddit_name_prefixed': 'r/Philippines', 
+  'hidden': False, 
+  'pwls': 6, 
+  'link_flair_css_class': None, 
+  'downs': 0, 
+  'thumbnail_height': None, 
+  'top_awarded_type': None, 
+  'hide_score': False, 
+  'name': 't3_fztqqs', 
+  'quarantine': False, 
+  'link_flair_text_color': None, 
+  'upvote_ratio': 0.99, 
+  'author_flair_background_color': 'transparent', 
+  'subreddit_type': 'public', 
+  'ups': 373, 
+  'total_awards_received': 0, 
+  'media_embed': {}, 
+  'thumbnail_width': None, 
+  'author_flair_template_id': 'fada12be-4e86-11ec-886d-c2d462df1067', 
+  'is_original_content': False, 
+  'user_reports': [], 
+  'secure_media': None, 
+  'is_reddit_media_domain': False, 
+  'is_meta': False, 
+  'category': None, 
+  'secure_media_embed': {}, 
+  'link_flair_text': None, 
+  'can_mod_post': False, 
+  'score': 373, 
+  'approved_by': None, 
+  'is_created_from_ads_ui': False, 
+  'author_premium': False, 
+  'thumbnail': 'self', 
+  'edited': 1759529338.0, 
+  'author_flair_css_class': None, 
+  'author_flair_richtext': [
+    {
+      'a': ':yaya:',
+      'e': 'emoji',
+      'u': 'https://emoji.redditmedia.com/q7f65kic2w181_t5_2qjov/yaya'
+    }
+  ], 
+  'gildings': {}, 
+  'content_categories': None, 
+  'is_self': True, 
+  'mod_note': None, 
+  'created': 1586683718.0, 
+  'link_flair_type': 'text', 
+  'wls': 6, 
+  'removed_by_category': None, 
+  'banned_by': None, 
+  'author_flair_type': 'richtext', 
+  'domain': 'self.Philippines', 
+  'allow_live_comments': True, 
+  'selftext_html': '<!-- SC_OFF --><div class="md"><p>Welcome to the <a href="/r/Philippines">r/Philippines</a> hub thread! Where are you trying to go?</p>\n\n<h2><a href=
+  "https://www.reddit.com/r/Philippines/comments/1nxcdz6">Daily random discussion - Oct 04, 2025</a></h2>\n\n<h2><a href=
+  "https://www.reddit.com/r/Philippines/comments/1nt0uu1">Weekly help thread - Sep 29, 2025</a></h2>\n\n<h2><a href=
+  "https://www.reddit.com/r/Philippines/comments/1kbyd75">What to do in June 2025</a></h2>\n</div><!-- SC_ON -->', 
+  'likes': None, 
+  'suggested_sort': 'new', 
+  'banned_at_utc': None, 
+  'view_count': None, 
+  'archived': True, 
+  'no_follow': False, 
+  'is_crosspostable': True, 
+  'pinned': False, 
+  'over_18': False, 
+  'all_awardings': [], 
+  'awarders': [], 
+  'media_only': False, 
+  'can_gild': False, 
+  'spoiler': False, 
+  'locked': True, 
+  'author_flair_text': ':yaya:', 
+  'treatment_tags': [], 
+  'visited': False, 
+  'removed_by': None, 
+  'num_reports': None, 
+  'distinguished': 'moderator', 
+  'subreddit_id': 't5_2qjov', 
+  'author_is_blocked': False, 
+  'mod_reason_by': None, 
+  'removal_reason': None, 
+  'link_flair_background_color': '', 
+  'id': 'fztqqs', 
+  'is_robot_indexable': True, 
+  'report_reasons': None, 
+  'author': Redditor(name='the_yaya'), 
+  'discussion_type': None, 
+  'num_comments': 5, 
+  'send_replies': False, 
+  'contest_mode': False, 
+  'mod_reports': [], 
+  'author_patreon_flair': False, 
+  'author_flair_text_color': 'dark', 
+  'permalink': '/r/Philippines/comments/fztqqs/hub_weekly_help_thread_random_discussion_events/', 
+  'stickied': True, 
+  'url': 'https://www.reddit.com/r/Philippines/comments/fztqqs/hub_weekly_help_thread_random_discussion_events/', 
+  'subreddit_subscribers': 3482253, 
+  'created_utc': 1586683718.0, 
+  'num_crossposts': 7, 
+  'media': None, 
+  'is_video': False, 
+  '_fetched': False, 
+  '_additional_fetch_params': {}, 
+  '_comments_by_id': {}
+}
+```
+
+```
+{
+  'comment_limit': 2048, 
+  'comment_sort': 'confidence', 
+  '_reddit': <praw.reddit.Reddit object at 0x000002DF297B9FD0>, 
+  'approved_at_utc': None, 
+  'subreddit': Subreddit(display_name='Philippines'), 
+  'selftext': '', 
+  'author_fullname': 't2_u5gsmqsb', 
+  'saved': False, 
+  'mod_reason_title': None, 
+  'gilded': 0, 
+  'clicked': False, 
+  'title': 'Somebody finally said it. Obvious kasi na ang nila Priority was always Duterte and not the people.', 
+  'link_flair_richtext': [
+    {
+      'e': 'text', 
+      't': 'PoliticsPH'
+    }
+  ], 
+  'subreddit_name_prefixed': 'r/Philippines', 
+  'hidden': False, 
+  'pwls': 6, 
+  'link_flair_css_class': 'politics', 
+  'downs': 0, 
+  'thumbnail_height': 139, 
+  'top_awarded_type': None, 
+  'hide_score': False, 
+  'name': 't3_1nxjyey', 
+  'quarantine': False, 
+  'link_flair_text_color': 'dark', 
+  'upvote_ratio': 0.99, 
+  'author_flair_background_color': None, 
+  'ups': 972, 
+  'total_awards_received': 0, 
+  'media_embed': {}, 
+  'thumbnail_width': 140, 
+  'author_flair_template_id': None, 
+  'is_original_content': False, 
+  'user_reports': [], 
+  'secure_media': None, 
+  'is_reddit_media_domain': True, 
+  'is_meta': False, 
+  'category': None, 
+  'secure_media_embed': {}, 
+  'link_flair_text': 'PoliticsPH', 
+  'can_mod_post': False, 
+  'score': 972, 
+  'approved_by': None, 
+  'is_created_from_ads_ui': False, 
+  'author_premium': False, 
+  'thumbnail':
+  'https://b.thumbs.redditmedia.com/mE0SpuG2uFx_ovtuTNKy1E2g2QWnHvbqXw2Pgk43jVA.jpg', 
+  'edited': False, 
+  'author_flair_css_class': None, 
+  'author_flair_richtext': [], 
+  'gildings': {}, 
+  'post_hint': 'image', 
+  'content_categories': None, 
+  'is_self': False, 
+  'subreddit_type': 'public', 
+  'created': 1759550195.0, 
+  'link_flair_type': 'richtext', 
+  'wls': 6, 
+  'removed_by_category': None, 
+  'banned_by': None, 
+  'author_flair_type': 'text', 
+  'domain': 'i.redd.it', 
+  'allow_live_comments': False, 
+  'selftext_html': None, 
+  'likes': None, 
+  'suggested_sort': None, 
+  'banned_at_utc': None, 
+  'url_overridden_by_dest':
+  'https://i.redd.it/pglgtkt3q0tf1.jpeg', 
+  'view_count': None, 
+  'archived': False, 
+  'no_follow': False, 
+  'is_crosspostable': True, 
+  'pinned': False, 
+  'over_18': False, 
+  'preview': {
+    'images': [
+      {
+        'source': {
+          'url': 'https://preview.redd.it/pglgtkt3q0tf1.jpeg?auto=webp&s=ffc0bf7b5b2be61e3a2e59a86d3f7d05265961b6', 
+          'width': 1080, 
+          'height': 1074
+        }, 
+        'resolutions': [
+          {
+            'url': 'https://preview.redd.it/pglgtkt3q0tf1.jpeg?width=108&crop=smart&auto=webp&s=a51ce4f45bbcdee952c8cfd7d4eb8e7a9d642fd9', 
+            'width': 108, 
+            'height': 107
+          }, 
+          {
+            'url': 'https://preview.redd.it/pglgtkt3q0tf1.jpeg?width=216&crop=smart&auto=webp&s=f6a5fa1ab57a0f807f7ca39462f029a4bfe4c1c9', 
+            'width': 216, 
+            'height': 214
+          },
+          {
+            'url': 'https://preview.redd.it/pglgtkt3q0tf1.jpeg?width=320&crop=smart&auto=webp&s=6798c6c311e3b70e2ff3dfebc2d8e140cfa10c77', 
+            'width': 320, 
+            'height': 318
+          },
+          {
+            'url': 'https://preview.redd.it/pglgtkt3q0tf1.jpeg?width=640&crop=smart&auto=webp&s=f03031b0f95d2cdcace0d3918ea863159fbbe324', 
+            'width': 640, 
+            'height': 636
+          },
+          {
+            'url': 'https://preview.redd.it/pglgtkt3q0tf1.jpeg?width=960&crop=smart&auto=webp&s=4afe6c967377d092014c097b55334867d56f4df7', 
+            'width': 960, 
+            'height': 954
+          },
+          {
+            'url': 'https://preview.redd.it/pglgtkt3q0tf1.jpeg?width=1080&crop=smart&auto=webp&s=f5e5c65064f8612e64c94e4d1a0d60669798f26b', 
+            'width': 1080, 
+            'height': 1074
+          }
+        ], 
+        'variants': {}, 
+        'id': 'LnqXJao_Dedo12Ivi-MKfXPbZ3AwP4ea0igsb8z327o'
+      }
+    ], 
+    'enabled': True
+  }, 
+  'all_awardings': [], 
+  'awarders': [], 
+  'media_only': False, 
+  'link_flair_template_id': 'e123d194-6329-11ed-87a7-c288474b15e0', 
+  'can_gild': False, 
+  'spoiler': False, 
+  'locked': False, 
+  'author_flair_text': None, 
+  'treatment_tags': [], 
+  'visited': False, 
+  'removed_by': None, 
+  'mod_note': None, 
+  'distinguished': None, 
+  'subreddit_id': 't5_2qjov', 
+  'author_is_blocked': False, 
+  'mod_reason_by': None, 
+  'num_reports': None, 
+  'removal_reason': None, 
+  'link_flair_background_color': '#ff80ff', 
+  'id': '1nxjyey', 
+  'is_robot_indexable': True, 
+  'report_reasons': None, 
+  'author': Redditor(name='DogsAndPokemons'), 
+  'discussion_type': None, 
+  'num_comments': 33, 
+  'send_replies': True, 
+  'contest_mode': False, 
+  'mod_reports': [], 
+  'author_patreon_flair': False, 
+  'author_flair_text_color': None, 
+  'permalink': '/r/Philippines/comments/1nxjyey/somebody_finally_said_it_obvious_kasi_na_ang_nila/', 
+  'stickied': False, 
+  'url':
+  'https://i.redd.it/pglgtkt3q0tf1.jpeg', 
+  'subreddit_subscribers': 3482255, 
+  'created_utc': 1759550195.0, 
+  'num_crossposts': 0, 
+  'media': None, 
+  'is_video': False, 
+  '_fetched': False, 
+  '_additional_fetch_params': {}, 
+  '_comments_by_id': {}}
+```
+
+a comment object in a reddit post has the following data:
+```
+{
+  '_replies': <praw.models.comment_forest.CommentForest object at 0x000001ADAE6EAA90>, 
+  '_submission': Submission(id='1nxjyey'), 
+  '_reddit': <praw.reddit.Reddit object at 0x000001ADAA7D8C10>, 
+  'subreddit_id': 't5_2qjov', 
+  'approved_at_utc': None, 
+  'author_is_blocked': False, 
+  'comment_type': None, 
+  'awarders': [], 
+  'mod_reason_by': None, 
+  'banned_by': None, 
+  'author_flair_type': 'text', 
+  'total_awards_received': 0, 
+  'subreddit': Subreddit(display_name='Philippines'), 
+  'author_flair_template_id': None, 
+  'likes': None, 
+  'user_reports': [], 
+  'saved': False, 
+  'id': 'nhoac82', 
+  'banned_at_utc': None, 
+  'mod_reason_title': None, 
+  'gilded': 0, 
+  'archived': False, 
+  'collapsed_reason_code': None, 
+  'no_follow': False, 
+  'author': Redditor(name='Positive-Pianist-218'), 
+  'can_mod_post': False, 
+  'created_utc': 1759557055.0, 
+  'send_replies': True, 
+  'parent_id': 't3_1nxjyey', 
+  'score': 1, 
+  'author_fullname': 't2_56jgik6x', 
+  'approved_by': None, 
+  'mod_note': None, 
+  'all_awardings': [], 
+  'collapsed': False, 
+  'body': 'Kasi nga tuta sila ni Duterte, pag sinabi ni Duterte na talon, tatalon yang mga yan.', 
+  'edited': False, 
+  'top_awarded_type': None, 
+  'author_flair_css_class': None, 
+  'name': 't1_nhoac82', 
+  'is_submitter': False, 
+  'downs': 0, 
+  'author_flair_richtext': [], 
+  'author_patreon_flair': False, 
+  'body_html': '<div class="md"><p>Kasi nga tuta sila ni Duterte, pag sinabi ni Duterte na talon, tatalon yang mga yan.</p>\n</div>', 
+  'removal_reason': None, 
+  'collapsed_reason': None, 
+  'distinguished': None, 
+  'associated_award': None, 
+  'stickied': False, 
+  'author_premium': False, 
+  'can_gild': False, 
+  'gildings': {}, 
+  'unrepliable_reason': None, 
+  'author_flair_text_color': None, 
+  'score_hidden': True, 
+  'permalink': '/r/Philippines/comments/1nxjyey/somebody_finally_said_it_obvious_kasi_na_ang_nila/nhoac82/', 
+  'subreddit_type': 'public', 
+  'locked': False, 
+  'report_reasons': None, 
+  'created': 1759557055.0, 
+  'author_flair_text': None, 
+  'treatment_tags': [], 
+  'link_id': 't3_1nxjyey', 
+  'subreddit_name_prefixed': 'r/Philippines', 
+  'controversiality': 0, 
+  'depth': 0, 
+  'author_flair_background_color': None, 
+  'collapsed_because_crowd_control': None, 
+  'mod_reports': [], 
+  'num_reports': None, 
+  'ups': 1, 
+  '_fetched': True
+}
+```
 
 # Articles, Videos, Papers:
 * using reddit api using python wrapper praw: https://praw.readthedocs.io/en/stable/getting_started/quick_start.html
