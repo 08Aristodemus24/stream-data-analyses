@@ -107,7 +107,7 @@ if __name__ == "__main__":
                 #     # print(f"reply {i}: {reply.replies}\n")
                 #     print(reply.__dict__)
                 get_all_replies(comment.replies)
-
+    
 
     # flush() is a blocking operation. It will pause the 
     # execution of the calling thread until all previously 
