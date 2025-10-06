@@ -30,25 +30,31 @@ def get_all_comments(comment_list):
             })
     return comments_data
 
-def get_all_replies(replies):
+def get_all_replies(replies, kwargs):
     reply_data = []
     for reply in replies:
         if isinstance(reply, CommentForest):
             # Recursively call the function for the newly fetched reply
-            reply_data.extend(get_all_replies(reply.children))
+            reply_data.extend(get_all_replies(reply.children, kwargs))
         else:
+            if isinstance(reply, MoreComments):
+                continue
             # print(f"reply id: {reply.id}")
             # print(f"reply author: {reply.author.name if reply.author else '[deleted]'}")
             # print(f"reply body: {reply.body}")
             # print(f"reply parent id: {reply.parent_id}")
             # print(f"reply replies: {get_all_replies(reply.replies) if reply.replies else []}")
-            reply_data.append({
-                "id": reply.id,
-                "author": reply.author.name if reply.author else "[deleted]",
-                "body": reply.body,
-                "parent_id": reply.parent_id,
-                "replies": get_all_replies(reply.replies) if reply.replies else []
-            })
+            # reply_datum = {
+            #     "reply_id": reply.id,
+            #     "author": reply.author.name if reply.author else "[deleted]",
+            #     "body": reply.body,
+            #     "parent_id": reply.parent_id,
+            #     "replies": get_all_replies(reply.replies, kwargs) if reply.replies else []
+            # }
+            datum = kwargs.copy()
+            datum.update({"comment": reply.body})
+            print(f"reply level: {datum.keys()}")
+            # reply_data.append(updated_datum)
 
     return reply_data
 
@@ -93,21 +99,32 @@ if __name__ == "__main__":
     
     for submission in subreddit.hot(limit=10):
         # print(submission.__dict__)
-        print(f"title: {submission.title}")
-        print(f"score: {submission.score}")
-        print(f"id: {submission.id}")
-        print(f"url: {submission.url}")
+
+        # this is a static variable that we will need to append 
+        # new comments/replies but also need to be unchanged/immuted
+        datum = {
+            "title": submission.title,
+            "score": submission.score,
+            "id": submission.id,
+            "url": submission.url
+        }
+        print(datum)
 
         # this is a list of comments
         for i, comment in enumerate(submission.comments):
             if hasattr(comment, "body"):
-                print(f"comment {i}: {comment.body}\n")
+                datum_copy = datum.copy()
+                datum_copy.update({"comment": comment.body})
+                print(f"comment level: {datum_copy.keys()}")
+                # append the comment to the datum
                 # for i, reply in enumerate(comment.replies):
                 #     print(f"reply {i}: {reply.body}")
                 #     # print(f"reply {i}: {reply.replies}\n")
                 #     print(reply.__dict__)
-                get_all_replies(comment.replies)
+                get_all_replies(comment.replies, datum)
     
+
+        # {title: <title>, score: <score>, id: <id>, url: <url>, comment: <comment or reply>}
 
     # flush() is a blocking operation. It will pause the 
     # execution of the calling thread until all previously 
