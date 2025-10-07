@@ -6,6 +6,7 @@
 * Apache Kafka - for data streaming
 * Terraform - for automating setup of azure services
 * Azure event hubs/bus/grid
+* Cassandra/
 
 # Insights:
 * 
@@ -1000,7 +1001,7 @@ the way we can create a topic manually assuming apache kafka or the apache kafka
 
 run `bin/kafka-topics.sh --create --topic subreddit-topics --bootstrap-server localhost:9092` or `bin/kafka-topics --create --topic subreddit-topics --bootstrap-server localhost:9092` 
 
-and the way we finally push data into the kafka broker is through kafka's **producer** through the command `bin/kafka-console-producer.sh --topic quickstart-events --bootstrap-server localhost:9092` (but again we can alternatively do this via the control center UI) 
+and the way we finally push data into the kafka broker is through kafka's **producer** through the command `bin/kafka-console-producer.sh --topic subreddit-topics --bootstrap-server localhost:9092` (but again we can alternatively do this via the control center UI) 
 
 isipin mo parang malaking data storage yung kafka cluster and its brokers by way of its distributed storage where it is specifically for data that comes in at lightning speed and on a daily basis that unfortunately can't be processed by a simple ETL/ELT pipeline alone, since if this was the case sa una pa lang during extraction and transformation it may be probable na habang nagtrtransform pa lang ng data ay meron na dumadating na bagong data in the pipeline which essentially creates a bottle neck and essentially clogs the pipeline because there is still data being processed and transformed at hand, this is why kafka solves this problem by essentially decoupling this ingestion process by a pipeline and the data coming in on a daily basis at perhaps unmanagable speeds.
 
@@ -1548,6 +1549,17 @@ If you must use your existing Python Kafka producer/consumer code with the broke
 
 If your primary goal is the simplest possible streaming solution on AWS, and you are open to using the AWS Boto3 SDK instead of the Kafka libraries, AWS Kinesis Data Streams (KDS) is the easier, fully serverless option with less complex networking.
 
+
+* Cassandra DB could be a viable option for storing real time data streamed from kafka
+
+Key characteristics of Cassandra include:
+NoSQL and Wide-Column Store: Cassandra is a non-relational database, meaning it doesn't use the traditional table-based relational model. Instead, it's a wide-column store, organizing data into keyspaces and tables with flexible schemas.
+Distributed Architecture: It employs a peer-to-peer architecture, where every node in a cluster is equal, eliminating single points of failure and enabling horizontal scalability. Data is partitioned and replicated across these nodes.
+High Availability and Fault Tolerance: Data replication across multiple nodes and data centers ensures continuous service even during hardware failures or planned downtime.
+Linear Scalability: Cassandra can scale horizontally by adding new nodes to the cluster without downtime, and it automatically redistributes data for load balancing.
+High Write Throughput: It is optimized for write-intensive workloads, making it suitable for applications requiring high-volume data ingestion, such as logging, metrics, and IoT data.
+Cassandra Query Language (CQL): Data management and interaction with Cassandra are performed using CQL, a SQL-like language.
+Use Cases: Cassandra is widely used in applications requiring immense scale, high availability, and real-time data processing, including e-commerce, content management, fraud detection, and IoT device management.
 
 # Articles, Videos, Papers:
 * using reddit api using python wrapper praw: https://praw.readthedocs.io/en/stable/getting_started/quick_start.html

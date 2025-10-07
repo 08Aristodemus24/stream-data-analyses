@@ -2,6 +2,7 @@ import requests
 
 import os
 import praw 
+import json
 
 from praw.models.comment_forest import CommentForest, MoreComments
 
@@ -44,17 +45,13 @@ def get_all_replies(replies, kwargs):
             # print(f"reply body: {reply.body}")
             # print(f"reply parent id: {reply.parent_id}")
             # print(f"reply replies: {get_all_replies(reply.replies) if reply.replies else []}")
-            # reply_datum = {
-            #     "reply_id": reply.id,
-            #     "author": reply.author.name if reply.author else "[deleted]",
-            #     "body": reply.body,
-            #     "parent_id": reply.parent_id,
-            #     "replies": get_all_replies(reply.replies, kwargs) if reply.replies else []
-            # }
+
             datum = kwargs.copy()
             datum.update({"comment": reply.body})
             print(f"reply level: {datum.keys()}")
-            # reply_data.append(updated_datum)
+
+            msg = json.dumps(datum).encode("utf-8") 
+            producer.send("subreddit-topic", value=msg)
 
     return reply_data
 
@@ -96,8 +93,14 @@ if __name__ == "__main__":
     )
 
     subreddit = reddit.subreddit("Philippines")
-    
-    for submission in subreddit.hot(limit=10):
+
+    # instantiate kafka producer object
+    producer = KafkaProducer(
+        bootstrap_servers="localhost:9092",
+        max_block_ms=5000
+    )
+
+    for submission in subreddit.hot():
         # print(submission.__dict__)
 
         # this is a static variable that we will need to append 
@@ -108,7 +111,7 @@ if __name__ == "__main__":
             "id": submission.id,
             "url": submission.url
         }
-        print(datum)
+        # print(datum)
 
         # this is a list of comments
         for i, comment in enumerate(submission.comments):
@@ -116,11 +119,13 @@ if __name__ == "__main__":
                 datum_copy = datum.copy()
                 datum_copy.update({"comment": comment.body})
                 print(f"comment level: {datum_copy.keys()}")
-                # append the comment to the datum
-                # for i, reply in enumerate(comment.replies):
-                #     print(f"reply {i}: {reply.body}")
-                #     # print(f"reply {i}: {reply.replies}\n")
-                #     print(reply.__dict__)
+
+                # send data to kafka broker for later ingestion
+                # /consumption
+                msg = json.dumps(datum_copy).encode("utf-8") 
+                producer.send("subreddit-topic", value=msg)
+                
+                # recursively get all replies of a comment
                 get_all_replies(comment.replies, datum)
     
 
@@ -131,3 +136,4 @@ if __name__ == "__main__":
     # sent records have completed their journey, meaning 
     # they have been successfully acknowledged by the Kafka
     # brokers
+    producer.flush()
