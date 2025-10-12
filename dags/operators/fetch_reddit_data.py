@@ -57,9 +57,9 @@ def get_all_replies(replies, kwargs):
 
 
 if __name__ == "__main__":
-    # load env variables
-    env_dir = Path('./').resolve()
-    load_dotenv(os.path.join(env_dir, '.env'))
+    # # load env variables
+    # env_dir = Path('./').resolve()
+    # load_dotenv(os.path.join(env_dir, '.env'))
 
     # http://localhost:65010/reddit_callback
     # https://www.reddit.com/api/v1/authorize?client_id=CLIENT_ID&response_type=TYPE&state=RANDOM_STRING&redirect_uri=URI&duration=DURATION&scope=SCOPE_STRING
@@ -78,10 +78,10 @@ if __name__ == "__main__":
     # equivalent python code to this curl request is the ff.
     
     # load env variables
-    client_id = os.environ['REDDIT_CLIENT_ID'] 
-    client_secret = os.environ['REDDIT_CLIENT_SECRET']
-    username = os.environ['REDDIT_USERNAME']
-    password = os.environ['REDDIT_PASSWORD']
+    client_id = os.environ.get('REDDIT_CLIENT_ID') 
+    client_secret = os.environ.get('REDDIT_CLIENT_SECRET')
+    username = os.environ.get('REDDIT_USERNAME')
+    password = os.environ.get('REDDIT_PASSWORD')
     user_agent = f"desktop:com.sr-analyses-pipeline:0.1 (by u/{username})"
 
     reddit = praw.Reddit(

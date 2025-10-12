@@ -1,4 +1,5 @@
 # Technologies:
+## options:
 * Azure databricks (Apache Spark)/AWS EMR - for data transformation
 * Azure data factory/AWS glue - for data task orchestration
 * Azure data lake/AWS S3 - for storing data at each transformation step
@@ -6,7 +7,17 @@
 * Apache Kafka - for data streaming
 * Terraform - for automating setup of azure services
 * Azure event hubs/bus/grid
-* Cassandra/
+* Cassandra - no sqk database for analytics
+
+## viable:
+* Postgres/supabase (postgres platform) - to store the reddit data
+* Azure synapse - for data warehouse to store real time data
+* DBT (databuild tool) - for data transformation using jinja and sql
+* Apache Kafka - queue for data streaming
+* Spark Streaming - transformation tool for streaming data
+* claude sonnet 3.8 - agent used for analyzing the stored real time data stored in cassandra or any kind of cloud data warehouse
+
+idea is to run the broker container on a certain server, run the airflow server on a separate server, and run the pipeline to extract and dump the data to the event queue/broker at its server url
 
 # Insights:
 * 
@@ -999,13 +1010,13 @@ the control center container is just a UI of the kafka brokers itself. Basically
 
 the way we can create a topic manually assuming apache kafka or the apache kafka that goes with the confluentinc/cp-server image is installed is through the command `bin/kafka-topics.sh --create --topic quickstart-events --bootstrap-server localhost:9092` and we can manually check this if we are indeed in using docker containers by entering the broker container using the confluentinc/cp-server image which essentially the kafka broker itself but can only be operated through command line. So we use this command and we will see that it will be reflected in the UI of the kafka broker which is the control center which allows us to see in a visual representation all the goes on in the kafka broker.
 
-run `bin/kafka-topics.sh --create --topic subreddit-topics --bootstrap-server localhost:9092` or `bin/kafka-topics --create --topic subreddit-topics --bootstrap-server localhost:9092` 
+run `bin/kafka-topics.sh --create --topic subreddit-topic --bootstrap-server localhost:9092` or `bin/kafka-topics --create --topic subreddit-topic --bootstrap-server localhost:9092` 
 
-and the way we finally push data into the kafka broker is through kafka's **producer** through the command `bin/kafka-console-producer.sh --topic subreddit-topics --bootstrap-server localhost:9092` (but again we can alternatively do this via the control center UI) 
+and the way we finally push data into the kafka broker is through kafka's **producer** through the command `bin/kafka-console-producer.sh --topic subreddit-topic --bootstrap-server localhost:9092` (but again we can alternatively do this via the control center UI) 
 
 isipin mo parang malaking data storage yung kafka cluster and its brokers by way of its distributed storage where it is specifically for data that comes in at lightning speed and on a daily basis that unfortunately can't be processed by a simple ETL/ELT pipeline alone, since if this was the case sa una pa lang during extraction and transformation it may be probable na habang nagtrtransform pa lang ng data ay meron na dumadating na bagong data in the pipeline which essentially creates a bottle neck and essentially clogs the pipeline because there is still data being processed and transformed at hand, this is why kafka solves this problem by essentially decoupling this ingestion process by a pipeline and the data coming in on a daily basis at perhaps unmanagable speeds.
 
-and when we want the pipeline to finally ingest data we can just use kafka's consumer which essentially returns us the data momentarily stored in the kafka clusters and brokers through the command `bin/kafka-console-consumer.sh --topic quickstart-events --bootstrap-server localhost:9092` (but again we can alternatively do this via the control center UI)
+and when we want the pipeline to finally ingest data we can just use kafka's consumer which essentially returns us the data momentarily stored in the kafka clusters and brokers through the command `bin/kafka-console-consumer.sh --topic subreddit-topic --bootstrap-server localhost:9092` (but again we can alternatively do this via the control center UI)
 
 when we enter messages or events in the kafka producer via CLI provided that the kafka consumer is running in unison with this producer we will see that as each event is entered the consumer can basically return this value to us, and when we operate this process via a script like a python script we can essentially see the contents or data itself returnned by the kafka consumer and have our ETL/ELT pipeline ingest this data for analyses or machine learning and other big data processes
 
@@ -1560,6 +1571,23 @@ Linear Scalability: Cassandra can scale horizontally by adding new nodes to the 
 High Write Throughput: It is optimized for write-intensive workloads, making it suitable for applications requiring high-volume data ingestion, such as logging, metrics, and IoT data.
 Cassandra Query Language (CQL): Data management and interaction with Cassandra are performed using CQL, a SQL-like language.
 Use Cases: Cassandra is widely used in applications requiring immense scale, high availability, and real-time data processing, including e-commerce, content management, fraud detection, and IoT device management.
+
+* running the python script that dumps the api data into kafka event queue in airflow container does not seem to work and spits out 
+```
+Traceback (most recent call last):
+  File "/opt/airflow/dags/operators/fetch_reddit_data.py", line 98, in <module>
+    producer = KafkaProducer(
+               ^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/kafka/producer/kafka.py", line 481, in __init__
+    client = self.config['kafka_client'](
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/kafka/client_async.py", line 262, in __init__
+    self.config['api_version'] = self.check_version()
+                                 ^^^^^^^^^^^^^^^^^^^^
+  File "/home/airflow/.local/lib/python3.11/site-packages/kafka/client_async.py", line 1074, in check_version
+    raise Errors.NoBrokersAvailable()
+kafka.errors.NoBrokersAvailable: NoBrokersAvailable
+``` 
 
 # Articles, Videos, Papers:
 * using reddit api using python wrapper praw: https://praw.readthedocs.io/en/stable/getting_started/quick_start.html

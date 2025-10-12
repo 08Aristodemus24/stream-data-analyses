@@ -24,7 +24,9 @@ down:
 # there are 4 containers we can basically access
 # the (kafka) broker, schema-registry, control-center, 
 # and the zookeeper
-sh:
+sh-broker:
 	docker exec -it broker bash
+sh-airflow:
+	docker exec -it subreddit-analyses-airflow-apiserver-1 bash
 
 restart: down up
