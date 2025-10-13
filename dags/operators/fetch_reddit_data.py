@@ -96,8 +96,13 @@ if __name__ == "__main__":
 
     # instantiate kafka producer object
     producer = KafkaProducer(
-        bootstrap_servers="localhost:9092",
-        max_block_ms=5000
+        bootstrap_servers="broker:9092",
+        # setting this to 120 seconds 1.2m milliseconds is if it 
+        # is taking more than 60 sec to update metadata with the Kafka broker
+        # 1200000
+        max_block_ms=1200000,
+        api_version=(0, 11, 2),
+        # auto_create_topics_enable_true=True,
     )
 
     for submission in subreddit.hot():
