@@ -1593,9 +1593,12 @@ kafka.errors.NoBrokersAvailable: NoBrokersAvailable
 * using reddit api using python wrapper praw: https://praw.readthedocs.io/en/stable/getting_started/quick_start.html
 * creating a client secret and id for reddit api: https://github.com/reddit-archive/reddit/wiki/OAuth2
 * examples on using oauth2 for reddit api: https://github.com/reddit-archive/reddit/wiki/OAuth2-Python-Example
+
 * news api for real time news: https://newsapi.org/docs
 * public data streaming apis: https://github.com/bytewax/awesome-public-real-time-datasets
 * public apis: https://github.com/public-apis/public-apis
+* weather api for the philippines: https://www.meteosource.com/weather-api-manila
+
 * apache kafka by techworldwithnana: https://www.youtube.com/watch?v=Ch5VhJzaoaI&list=PLCBT00GZN_SAzwTS-SuLRM547_4MUHPuM&index=2&pp=gAQBiAQB0gcJCcEJAYcqIYzv
 * apache kafka in 6 minutes: https://www.youtube.com/watch?v=Ch5VhJzaoaI&list=PLCBT00GZN_SAzwTS-SuLRM547_4MUHPuM&index=2&pp=gAQBiAQB0gcJCcEJAYcqIYzv
 * configuring confluent kafka with docker: https://docs.confluent.io/platform/current/installation/docker/config-reference.html
