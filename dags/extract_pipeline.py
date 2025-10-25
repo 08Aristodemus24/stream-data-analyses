@@ -34,7 +34,7 @@ default_args = {
 with DAG(
     dag_id="extract_pipeline",
     default_args=default_args,
-    description="extracts subreddit data from reddit api and queues the data in kafka",
+    description="extracts data from api and queues the data in kafka",
     start_date=dt.datetime(2024, 1, 1, 12),
 
     # runs every sunday at 12:00 
@@ -42,7 +42,7 @@ with DAG(
     catchup=False
 ) as dag:
     
-    fetch_reddit_data = BashOperator(
-        task_id="extract_signals",
-        bash_command=f"python {AIRFLOW_HOME}/operators/fetch_reddit_data.py"
+    fetch_data = BashOperator(
+        task_id="fetch_data",
+        bash_command=f"python {AIRFLOW_HOME}/operators/fetch_data.py"
     )

@@ -10,7 +10,8 @@ from uuid import uuid4
 from pathlib import Path
 from dotenv import load_dotenv
 
-from kafka import KafkaProducer
+from confluent_kafka import Producer
+from confluent_kafka.admin import NewTopic
 
 def get_all_comments(comment_list):
     comments_data = []
@@ -51,7 +52,7 @@ def get_all_replies(replies, kwargs):
             print(f"reply level: {datum.keys()}")
 
             msg = json.dumps(datum).encode("utf-8") 
-            producer.send("subreddit-topic", value=msg)
+            producer.produce("subreddit-topic", value=msg)
 
     return reply_data
 
@@ -91,21 +92,24 @@ if __name__ == "__main__":
         password=password,
         user_agent=user_agent,
     )
-
     subreddit = reddit.subreddit("Philippines")
+    limit = 5
+
+    # configure kafka topic and producer
+    # topics
+    num_partitions = 3
+    repl_factor = 1
+    topics = []
+    topics.append(NewTopic("subreddit-topic", num_partitions, repl_factor))
 
     # instantiate kafka producer object
-    producer = KafkaProducer(
-        bootstrap_servers="broker:9092",
-        # setting this to 120 seconds 1.2m milliseconds is if it 
-        # is taking more than 60 sec to update metadata with the Kafka broker
-        # 1200000
-        # max_block_ms=5000,
-        api_version=(0, 11, 2),
-        # auto_create_topics_enable_true=True,
-    )
+    # it is imperative that this server endpoint is the same as the
+    # one in the docker compose file
+    producer = Producer({
+        "bootstrap.servers": "broker:29092"
+    })
 
-    for submission in subreddit.hot():
+    for submission in subreddit.hot(limit=limit):
         # print(submission.__dict__)
 
         # this is a static variable that we will need to append 
@@ -128,7 +132,7 @@ if __name__ == "__main__":
                 # send data to kafka broker for later ingestion
                 # /consumption
                 msg = json.dumps(datum_copy).encode("utf-8") 
-                producer.send("subreddit-topic", value=msg)
+                producer.produce("subreddit-topic", value=msg)
                 
                 # recursively get all replies of a comment
                 get_all_replies(comment.replies, datum)
