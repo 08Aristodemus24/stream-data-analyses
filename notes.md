@@ -1597,7 +1597,13 @@ kafka.errors.NoBrokersAvailable: NoBrokersAvailable
 * news api for real time news: https://newsapi.org/docs
 * public data streaming apis: https://github.com/bytewax/awesome-public-real-time-datasets
 * public apis: https://github.com/public-apis/public-apis
-* weather api for the philippines: https://www.meteosource.com/weather-api-manila
+* weather api for the philippines: https://www.meteosource.com/weather-api-manila (may bayad lang)
+* financial data api: https://finnhub.io/ (Accesses real-time stock API, institutional-grade fundamental and alternative data to supercharge your investment for FREE)
+* real time blockchain data: 
+- https://docs.bitquery.io/v1/docs/Examples/dexTrades/dex-pool-api (idk might be a good time to learn about and analyze the crypto market) 
+- https://www.blockchain.com/explorer/api/api_websocket
+- https://docs.alpaca.markets/docs/about-market-data-api
+* https://github.com/AnswerDotAI/ghapi (Use the GitHub API to consume public events happening on GitHub.)
 
 * apache kafka by techworldwithnana: https://www.youtube.com/watch?v=Ch5VhJzaoaI&list=PLCBT00GZN_SAzwTS-SuLRM547_4MUHPuM&index=2&pp=gAQBiAQB0gcJCcEJAYcqIYzv
 * apache kafka in 6 minutes: https://www.youtube.com/watch?v=Ch5VhJzaoaI&list=PLCBT00GZN_SAzwTS-SuLRM547_4MUHPuM&index=2&pp=gAQBiAQB0gcJCcEJAYcqIYzv

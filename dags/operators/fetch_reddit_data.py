@@ -57,9 +57,9 @@ def get_all_replies(replies, kwargs):
 
 
 if __name__ == "__main__":
-    # # load env variables
-    # env_dir = Path('./').resolve()
-    # load_dotenv(os.path.join(env_dir, '.env'))
+    # load env variables
+    env_dir = Path('../../').resolve()
+    load_dotenv(os.path.join(env_dir, '.env'))
 
     # http://localhost:65010/reddit_callback
     # https://www.reddit.com/api/v1/authorize?client_id=CLIENT_ID&response_type=TYPE&state=RANDOM_STRING&redirect_uri=URI&duration=DURATION&scope=SCOPE_STRING
@@ -100,7 +100,7 @@ if __name__ == "__main__":
         # setting this to 120 seconds 1.2m milliseconds is if it 
         # is taking more than 60 sec to update metadata with the Kafka broker
         # 1200000
-        max_block_ms=1200000,
+        # max_block_ms=5000,
         api_version=(0, 11, 2),
         # auto_create_topics_enable_true=True,
     )
