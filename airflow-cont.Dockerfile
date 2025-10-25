@@ -26,5 +26,4 @@ USER airflow
 # copy and install dependencies in airflow container specifically
 # in the /opt/airflow directory which is teh airflow home
 COPY ./requirements.txt ./
-RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
